@@ -328,40 +328,54 @@ int main(void) {
 
 	char start_name[MAX_STATION_NAME];
 	char end_name[MAX_STATION_NAME];
+	
+	int quit = 0;
 
-	printf("출발점의 이름을 입력하세요: ");
-	fgets(start_name, MAX_STATION_NAME, stdin);
-	start_name[strcspn(start_name, "\n")] = 0;
+	while (quit == 0) {
+		printf("종료하고싶다면 1 입력 아니면 0 입력: ");
+		scanf("%d", &quit);
+		if (quit == 1)
+		{
+			printf("종료");
+			break;
+		}
+		getchar();
 
-	printf("도착점의 이름을 입력하세요: ");
-	fgets(end_name, MAX_STATION_NAME, stdin);
-	end_name[strcspn(end_name, "\n")] = 0;
+		printf("출발점의 이름을 입력하세요: ");
+		fgets(start_name, MAX_STATION_NAME, stdin);
+		start_name[strcspn(start_name, "\n")] = 0;
 
-	int start_id = find_station_by_name(start_name);
-	int end_id = find_station_by_name(end_name);
+		printf("도착점의 이름을 입력하세요: ");
+		fgets(end_name, MAX_STATION_NAME, stdin);
+		end_name[strcspn(end_name, "\n")] = 0;
 
-	if (start_id == -1) {
-		printf("\n오류: '%s' 역을 찾을 수 없습니다.\n", start_name);
+		int start_id = find_station_by_name(start_name);
+		int end_id = find_station_by_name(end_name);
+
+		if (start_id == -1) {
+			printf("\n오류: '%s' 역을 찾을 수 없습니다.\n", start_name);
+			free(g);
+			return 1;
+		}
+
+		if (end_id == -1) {
+			printf("\n오류: '%s' 역을 찾을 수 없습니다.\n", end_name);
+			free(g);
+			return 1;
+		}
+
+		if (start_id == end_id) {
+			printf("\n출발점과 도착점이 동일합니다.\n");
+			free(g);
+			return 1;
+		}
+
+		dijkstra(g, start_id, end_id);
+
+		print_path(start_id, end_id);
+
 		free(g);
-		return 1;
 	}
-
-	if (end_id == -1) {
-		printf("\n오류: '%s' 역을 찾을 수 없습니다.\n", end_name);
-		free(g);
-		return 1;
-	}
-
-	if (start_id == end_id) {
-		printf("\n출발점과 도착점이 동일합니다.\n");
-		free(g);
-		return 1;
-	}
-
-	dijkstra(g, start_id, end_id);
-
-	print_path(start_id, end_id);
-
-	free(g);
+	
 	return 0;
 }
