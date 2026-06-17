@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="다익스트라c/다익스트라c.vcxproj" />
+  <Project Path="다익스트라c/다익스트라c.vcxproj" Id="26f2c4a7-03dc-4fda-b20b-e1d6ef62e52a" />
 </Solution>
