@@ -556,7 +556,7 @@ int main(void) {
 	g->n = MAX_VERTICES;
 
 	printf("==========================================\n");
-	printf("   서울 지하철 최단경로 검색 시스템\n");
+	printf("   1~9호선 지하철 최단경로 검색\n");
 	printf("==========================================\n\n");
 
 	// subway_data.csv에서 모든 역과 거리 정보를 로드
@@ -578,15 +578,6 @@ int main(void) {
 	
 	int quit = 0;
 
-	while (quit == 0) {
-		printf("종료하고싶다면 1 입력 아니면 0 입력: ");
-		scanf("%d", &quit);
-		if (quit == 1)
-		{
-			printf("종료");
-			break;
-		}
-		getchar();
 
 		printf("출발점의 이름을 입력하세요: ");
 		fgets(start_name, MAX_STATION_NAME, stdin);
@@ -620,9 +611,7 @@ int main(void) {
 		dijkstra(g, start_id, end_id);
 
 		print_path(start_id, end_id);
-
-		free(g);
-	}
 	
+	free(g);
 	return 0;
 }

@@ -1,0 +1,7 @@
+﻿<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="dijkstra_c/dijkstra_c.vcxproj" Id="26f2c4a7-03dc-4fda-b20b-e1d6ef62e52a" />
+</Solution>
