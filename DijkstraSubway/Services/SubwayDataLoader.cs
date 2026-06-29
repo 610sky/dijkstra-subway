@@ -8,12 +8,15 @@ namespace DijkstraSubway.Services
 {
     public class SubwayDataLoader
     {
+        // csv파일에서 역 정보 로드
         public static (List<Station> stations, List<StationDistance> distances) LoadSubwayData(string filename)
         {
             var stations = new List<Station>();
             var distances = new List<StationDistance>();
 
             string filePath = FindFile(filename);
+
+            // 파일을 못찾으면
             if (filePath == null)
             {
                 throw new FileNotFoundException($"파일을 찾을 수 없습니다: {filename}");
@@ -22,20 +25,25 @@ namespace DijkstraSubway.Services
             try
             {
                 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+                // 파일 인코딩
                 var lines = File.ReadAllLines(filePath, System.Text.Encoding.GetEncoding("EUC-KR"));
+                // 열 이름
                 bool firstLine = true;
 
                 foreach (var line in lines)
                 {
+                    // 열 이름 스킵
                     if (firstLine)
                     {
                         firstLine = false;
                         continue;
                     }
 
+                    // 여백 스킵
                     if (string.IsNullOrWhiteSpace(line))
                         continue;
 
+                    // csv파일 불완정성 검사
                     var fields = SplitCsv(line);
                     if (fields.Length < 4)
                         continue;
@@ -59,7 +67,7 @@ namespace DijkstraSubway.Services
                     if (!int.TryParse(lineNumStr, out int lineNum))
                         continue;
 
-                    // 역명 정규화: 괄호 안의 내용 제거
+                    // 역명 괄호 안의 내용 제거
                     string normalizedName = NormalizeName(name);
 
                     var station = new Station
@@ -78,12 +86,6 @@ namespace DijkstraSubway.Services
                     };
                     distances.Add(distance);
                 }
-
-                // ID 할당
-                for (int i = 0; i < stations.Count; i++)
-                {
-                    stations[i].Id = i;
-                }
             }
             catch (Exception ex)
             {
@@ -93,6 +95,7 @@ namespace DijkstraSubway.Services
             return (stations, distances);
         }
 
+        // 파일에 대한 경로찾기
         private static string? FindFile(string filename)
         {
             string[] paths = new[]

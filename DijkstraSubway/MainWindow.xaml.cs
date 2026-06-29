@@ -230,41 +230,6 @@ namespace DijkstraSubway
             return -1;
         }
 
-        //        private string FormatResult(Station start, Station end, int distance, List<int> path)
-        //        {
-        //            var result = "==========================================\n";
-        //         result += "     최단경로 검색 결과\n";
-        //            result += "==========================================\n";
-        //            result += $"출발점: {start.Name} ({start.Line}호선)\n";
-        //  result += $"도착점: {end.Name} ({end.Line}호선)\n";
-        //   result += $"최단거리: {distance / 10.0:F1} km\n\n";
-
-        //    var filteredPath = new List<int>();
-        //    for (int i = 0; i < path.Count; i++)
-        //{
-        //       if (filteredPath.Count == 0 ||
-        //    _allStations[path[i]].Name != _allStations[filteredPath[filteredPath.Count - 1]].Name ||
-        //   _allStations[path[i]].Line != _allStations[filteredPath[filteredPath.Count - 1]].Line)
-        //             {
-        //        filteredPath.Add(path[i]);
-        //       }
-        //     }
-
-        //                     result += "경로: ";
-        //              for (int i = 0; i < filteredPath.Count; i++)
-        //                {
-        //              var station = _allStations[filteredPath[i]];
-        //               result += $"{station.Name}({station.Line}호선)";
-        //              if (i < filteredPath.Count - 1)
-        //             {
-        //                    result += " → ";
-        //                  }
-        //                  }
-        //                 result += "\n==========================================\n";
-
-        //                        return result;
-        //                    }
-
         private void ShowErrorResult(string message)
         {
             ResultHeader.Text = "[알림]";

@@ -83,9 +83,9 @@ namespace DijkstraSubway.Services
                 // 같은 호선의 역들을 Order 순서로 정렬
                 var lineStations = stations
                  .Select((station, index) => (station, index))
-              .Where(x => x.station.Line == line)
-                   .OrderBy(x => x.station.Order)
-                    .ToList();
+                 .Where(x => x.station.Line == line)
+                 .OrderBy(x => x.station.Order)
+                 .ToList();
 
                 if (lineStations.Count == 0)
                     continue;
@@ -95,62 +95,19 @@ namespace DijkstraSubway.Services
                 {
                     int currIdx = lineStations[i].index;
                     int nextIdx = lineStations[i + 1].index;
+                    var currStation = stations[currIdx];
+                    var nextStation = stations[nextIdx];
 
                     double dist = GetStationDistance(distances, line, stations[nextIdx].Name);
-                    if (dist > 0)
-                    {
-                        int weight = (int)(dist * 10 + 0.5);
-                        _weights[currIdx][nextIdx] = weight;
+                    int weight = (dist > 0) ? (int)(dist * 10 + 0.5) : 20;
 
-                        // 6호선: 응암~구산 구간은 한 방향만 (응암→구산만 가능)
-                        if (line == 6)
-                        {
-                            var currStation = stations[currIdx];
-                            var nextStation = stations[nextIdx];
-                            if ((currStation.Name.Contains("응암") && nextStation.Name.Contains("역촌")) ||
-                          (currStation.Name.Contains("역촌") && nextStation.Name.Contains("불광")) ||
-                            (currStation.Name.Contains("불광") && nextStation.Name.Contains("독바위")) ||
-                             (currStation.Name.Contains("독바위") && nextStation.Name.Contains("연신내")) ||
-                     (currStation.Name.Contains("연신내") && nextStation.Name.Contains("구산")))
-                            {
-                                // 한 방향만 연결 (역방향 제거)
-                            }
-                            else
-                            {
-                                _weights[nextIdx][currIdx] = weight;
-                            }
-                        }
-                        else
-                        {
-                            _weights[nextIdx][currIdx] = weight;
-                        }
-                    }
-                    else
-                    {
-                        _weights[currIdx][nextIdx] = 20;
+                    _weights[currIdx][nextIdx] = weight;
 
-                        // 6호선: 응암~구산 구간은 한 방향만
-                        if (line == 6)
-                        {
-                            var currStation = stations[currIdx];
-                            var nextStation = stations[nextIdx];
-                            if ((currStation.Name.Contains("응암") && nextStation.Name.Contains("역촌")) ||
-                         (currStation.Name.Contains("역촌") && nextStation.Name.Contains("불광")) ||
-                             (currStation.Name.Contains("불광") && nextStation.Name.Contains("독바위")) ||
-                                (currStation.Name.Contains("독바위") && nextStation.Name.Contains("연신내")) ||
-                          (currStation.Name.Contains("연신내") && nextStation.Name.Contains("구산")))
-                            {
-                                // 한 방향만 연결 (역방향 제거)
-                            }
-                            else
-                            {
-                                _weights[nextIdx][currIdx] = 20;
-                            }
-                        }
-                        else
-                        {
-                            _weights[nextIdx][currIdx] = 20;
-                        }
+                    // 역방향 연결 여부 결정
+                    bool isOneWay = IsLine6OneWaySection(line, currStation, nextStation);
+                    if (!isOneWay)
+                    {
+                        _weights[nextIdx][currIdx] = weight;
                     }
                 }
 
@@ -187,17 +144,9 @@ namespace DijkstraSubway.Services
                         int gusanIdx = gusan.index;
 
                         double dist = GetStationDistance(distances, line, "응암");
-                        if (dist > 0)
-                        {
-                            int weight = (int)(dist * 10 + 0.5);
-                            // 구산 → 응암으로만 한 방향 순환
-                            _weights[gusanIdx][ungamIdx] = weight;
-                        }
-                        else
-                        {
-                            // 구산 → 응암으로만 한 방향 순환
-                            _weights[gusanIdx][ungamIdx] = 20;
-                        }
+                        int weight = (dist > 0) ? (int)(dist * 10 + 0.5) : 20;
+                        // 구산 → 응암으로만 한 방향 순환
+                        _weights[gusanIdx][ungamIdx] = weight;
                     }
                 }
 
@@ -247,6 +196,21 @@ namespace DijkstraSubway.Services
         {
             var distance = distances.FirstOrDefault(d => d.Line == line && d.Name == name);
             return distance?.Distance ?? 0;
+        }
+
+        private bool IsLine6OneWaySection(int line, Station currStation, Station nextStation)
+        {
+            // 6호선 응암~구산 구간은 한 방향만 (응암→구산만 가능)
+            if (line == 6)
+            {
+                return (currStation.Name.Contains("응암") && nextStation.Name.Contains("역촌")) ||
+              (currStation.Name.Contains("역촌") && nextStation.Name.Contains("불광")) ||
+                    (currStation.Name.Contains("불광") && nextStation.Name.Contains("독바위")) ||
+                             (currStation.Name.Contains("독바위") && nextStation.Name.Contains("연신내")) ||
+                 (currStation.Name.Contains("연신내") && nextStation.Name.Contains("구산"));
+            }
+
+            return false;  // 다른 호선은 양방향
         }
 
         private void Dijkstra(int n, int start, int end)
